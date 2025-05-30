@@ -2,9 +2,11 @@
 import React, {useState} from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoCloseOutline } from "react-icons/io5";
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 const Page = () => {
     const [isNavOpen, setIsNavOpen] = useState(false);
+    const router = useRouter();
   return (
     <div>
         {/* for lage screens */}
@@ -15,7 +17,7 @@ const Page = () => {
                 <Link className='hover:border-b-2 border-white' href="#features" scroll={true}>Features</Link>
                 <Link className='hover:border-b-2 border-white'  href="#contact" scroll={true}>Contact Us</Link>
             </div>
-            <button className='btn-primary'>Get Started</button>
+            <button className='btn-primary' onClick={()=>router.push('/uploads')}>Get Started</button>
         </nav>
         {/* for small screens */}
         <nav className='flex items-center justify-between mt-8  lg:hidden px-4'>

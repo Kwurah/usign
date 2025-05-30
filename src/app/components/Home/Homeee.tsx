@@ -3,8 +3,10 @@ import React from 'react'
 import { PiSignatureDuotone } from "react-icons/pi";
 import { GrDocumentUpload } from "react-icons/gr";
 import { BsDownload } from "react-icons/bs";
+import { useRouter } from 'next/navigation';
 
 const Homeee = () => {
+  const router = useRouter();
   return (
     <section id="home" className="  justify-center pt-[2.5rem] pb-[3.5rem] lg:pt-[3rem] lg:pb-[6rem]">
       <div className="floating-element" />
@@ -25,19 +27,19 @@ const Homeee = () => {
 
       {/* Buttons for large screens */}
       <div className="hidden lg:flex justify-center items-center gap-4 flex-wrap animate-slideUp [animation-delay:0.6s]">
-        <button className="btn-primary"> Start Signing for Free</button>
+        <button className="btn-primary" onClick={()=>router.push('/uploads')}> Start Signing for Free</button>
         <div className="floating-element" />
-        <button className="btn-secondary">Explore Features</button>
+        <button className="btn-secondary" onClick={()=>router.push('#features')}>Explore Features</button>
         <div className="floating-element" />
       </div>
 
       {/* Buttons for small screens */}
       <div className="lg:hidden grid justify-center items-center gap-4 flex-wrap animate-slideUp [animation-delay:0.6s]">
-        <button className="bg-white text-black py-2 px-[1.8rem] rounded-full font-semibold text-[1rem] border border-white/30 transition-all duration-300 ease-in-out">
+        <button onClick={()=>router.push('/uploads')} className="bg-white text-black py-2 px-[1.8rem] rounded-full font-semibold text-[1rem] border border-white/30 transition-all duration-300 ease-in-out">
          Start Signing for Free
         </button>
         <div className="floating-element" />
-        <button className="bg-transparent text-white py-2 px-[1.8rem] rounded-full font-semibold text-[1rem] border border-white/30 transition-all duration-300 ease-in-out">
+        <button onClick={()=>router.push('#features')} className="bg-transparent text-white py-2 px-[1.8rem] rounded-full font-semibold text-[1rem] border border-white/30 transition-all duration-300 ease-in-out">
           Explore Features
         </button>
         <div className="floating-element" />

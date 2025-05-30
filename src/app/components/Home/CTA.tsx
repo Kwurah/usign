@@ -1,8 +1,10 @@
 "use client"
 import React from 'react'
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 const CTA = () => {
+  const router = useRouter();
 
   return (
     <motion.div
@@ -22,8 +24,8 @@ Start your free trial today and experience the future of digital signatures.
  <div className='floating-element'></div>
 {/* lg buttons */}
            <div className='hidden lg:grid xl:flex items-center justify-center gap-4 flex-wrap animate-slideUp [animation-delay:0.6s]'>
-  <button className='btn-primary'>Get started</button>  
-  <button className='btn-secondary'>Explore Features</button>
+  <button className='btn-primary' onClick={()=>router.push('/uploads')}>Get started</button>  
+  <button className='btn-secondary' onClick={()=>router.push('#features')}>Explore Features</button>
 
 </div>
 {/* small screens */}
