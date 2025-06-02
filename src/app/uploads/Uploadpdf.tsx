@@ -3,20 +3,23 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Loader, Check, X } from 'lucide-react';
 
-interface UploadPdfProps {
-  setCurrentStep: (step: 'sign') => void;
-  setUploadedFile: (file: File) => void;
+type UploadPdfProps = {
+  setCurrentStep: (step: 'sign') => void; //  move to the next step
+  setUploadedFile: (file: File) => void; // let parent component know the uploaded file
 }
 
+// Component to handle PDF file upload
 const UploadPdf: React.FC<UploadPdfProps> = ({ setCurrentStep, setUploadedFile }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // trigger when a user inserts a file
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+//Grabs the first file. If no file is selected, exit.
     const file = event.target.files?.[0];
     if (!file) return;
-
+    // check if the file is a PDF 
     if (file.type !== 'application/pdf') {
       setError('Please select a PDF file');
       return;
