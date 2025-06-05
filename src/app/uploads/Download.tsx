@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
-import { Download, FileText, Loader, Check, X } from 'lucide-react';
+import { Download,  Loader, Check, X } from 'lucide-react';
+
 
 type Props = {
   signedFilename: string;
@@ -25,6 +26,7 @@ const handleDownload = async () => {
   setSuccess('');
 
   try {
+    // if the filename starts with 'signed-', remove it for the download
     const filename = signedFilename.startsWith('signed-')
       ? signedFilename.replace('signed-', '')
       : signedFilename;
@@ -58,11 +60,13 @@ const handleDownload = async () => {
     setSuccess('');
   };
 
+
+
   return (
     <div className="max-w-md mx-auto mt-[5rem] bg-white border border-gray-200 rounded-lg shadow-sm p-6">
       <div className="text-center mb-6">
         <Download className="h-8 w-8 text-black mx-auto mb-3" />
-        <h2 className="text-2xl font-semibold text-black mb-2">Download Signed PDF</h2>
+        <h2 className="text-2xl font-semibold text-black mb-2">Download Signed PDnnF</h2>
         <p className="text-gray-600">Your document has been signed successfully</p>
       </div>
 
@@ -74,13 +78,15 @@ const handleDownload = async () => {
         </div>
 
         {/* PDF Preview Placeholder */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+        {/* <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
           <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
           <p className="text-sm text-gray-600">Signed PDF Preview</p>
           <p className="text-xs text-gray-500 mt-2">
             (Optional: Add react-pdf preview here)
           </p>
-        </div>
+        </div> */}
+        
+        {/* <Preview /> */}
 
         {error && (
           <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-md">
@@ -100,7 +106,7 @@ const handleDownload = async () => {
           <button
             onClick={handleDownload}
             disabled={loading}
-            className="w-full py-3 px-4 bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+            className="w-full py-3 px-4 cursor-pointer bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
           >
             {loading ? (
               <>
@@ -117,7 +123,7 @@ const handleDownload = async () => {
 
           <button
             onClick={handleReset}
-            className="w-full py-2 px-4 border border-gray-300 text-black rounded-md hover:bg-gray-50 transition-colors"
+            className="w-full py-2 px-4 border cursor-pointer border-gray-300 text-black rounded-md hover:bg-gray-50 transition-colors"
           >
             Sign Another Document
           </button>
