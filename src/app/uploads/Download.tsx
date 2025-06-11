@@ -45,7 +45,7 @@ const handleDownload = async () => {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    setSuccess('Download started!');
+    setSuccess('Download Complete!');
   } catch {
     setError('Download failed. Please try again.');
   } finally {
@@ -66,7 +66,7 @@ const handleDownload = async () => {
     <div className="max-w-md mx-auto mt-[5rem] bg-white border border-gray-200 rounded-lg shadow-sm p-6">
       <div className="text-center mb-6">
         <Download className="h-8 w-8 text-black mx-auto mb-3" />
-        <h2 className="text-2xl font-semibold text-black mb-2">Download Signed PDnnF</h2>
+        <h2 className="text-2xl font-semibold text-black mb-2">Download Signed PDF</h2>
         <p className="text-gray-600">Your document has been signed successfully</p>
       </div>
 
@@ -77,16 +77,7 @@ const handleDownload = async () => {
           <p className="text-sm text-gray-600">{signedFilename}</p>
         </div>
 
-        {/* PDF Preview Placeholder */}
-        {/* <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-600">Signed PDF Preview</p>
-          <p className="text-xs text-gray-500 mt-2">
-            (Optional: Add react-pdf preview here)
-          </p>
-        </div> */}
-        
-        {/* <Preview /> */}
+       
 
         {error && (
           <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-md">
