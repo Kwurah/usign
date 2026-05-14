@@ -60,7 +60,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
         const formData = new FormData();
         formData.append('file', uploadedFile);
 
-        const response = await fetch("http://127.0.0.1:8000/convert-pdf-to-images", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/convert-pdf-to-images`, {
           method: "POST",
           body: formData,
         });
@@ -230,9 +230,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
         filename: uploadedFile.name,
       };
 
-      console.log("Sending payload:", payload);
-
-      const response = await fetch("http://127.0.0.1:8000/sign", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -260,7 +258,6 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
     } finally {
       setLoading(false);
     }
-    console.log('Submitting signature on page:', signatureData.page, 'Total pages:', pdfPages.length);
   };
 
   const saveDrawnSignature = () => {
@@ -584,15 +581,15 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
                   {savedSignatures.type && (
                     <div className="space-y-3">
-                      {/* <div className="bg-white border rounded-lg p-4"> */}
-                        {/* <p className="text-sm text-gray-600 mb-2">Saved signature:</p> */}
-                        {/* <div
+                      <div className="bg-white border rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-2">Saved signature:</p>
+                        <div
                           className="text-2xl text-center py-2"
                           style={{ fontFamily: 'cursive' }}
-                        > */}
+                        >
                           {typedSignature}
-                        {/* </div> */}
-                      {/* </div> */}
+                        </div>
+                      </div>
                       <div className="text-center text-sm text-green-600 font-medium">
                         ✓ Signature saved! Click on the document to position it.
                       </div>
