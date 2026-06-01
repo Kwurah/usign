@@ -31,7 +31,7 @@ const handleDownload = async () => {
       ? signedFilename.replace('signed-', '')
       : signedFilename;
 
-    const response = await fetch(`http://127.0.0.1:8000/download/${encodeURIComponent(filename)}`);
+    const response = await fetch(`http://172.20.10.2:8000/download/${encodeURIComponent(filename)}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch the file.');

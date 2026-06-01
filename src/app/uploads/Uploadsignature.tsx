@@ -60,7 +60,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
         const formData = new FormData();
         formData.append('file', uploadedFile);
 
-        const response = await fetch("http://127.0.0.1:8000/convert-pdf-to-images", {
+        const response = await fetch("http://172.20.10.2:8000/convert-pdf-to-images", {
           method: "POST",
           body: formData,
         });
@@ -232,7 +232,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
       console.log("Sending payload:", payload);
 
-      const response = await fetch("http://127.0.0.1:8000/sign", {
+      const response = await fetch("http://172.20.10.2:8000/sign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -401,7 +401,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                 {/* Draw */}
                 <button
                   onClick={() => setSignatureMethod("draw")}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`lg:p-4 p-2 rounded-lg border-2 transition-all ${
                     signatureMethod === "draw"
                       ? "border-blue-500 bg-blue-50 text-blue-700"
                       : "border-gray-200 hover:border-gray-300"
