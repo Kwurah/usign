@@ -1,11 +1,10 @@
-"use client"
-import React, { useState } from 'react';
-import { Download,  Loader, Check, X } from 'lucide-react';
-
+"use client";
+import React, { useState } from "react";
+import { Download, Loader, Check, X } from "lucide-react";
 
 type Props = {
   signedFilename: string;
-  setCurrentStep: (step: 'upload' | 'sign' | 'download') => void;
+  setCurrentStep: (step: "upload" | "sign" | "download") => void;
   setUploadedFile: (file: File | null) => void;
   setSignedFilename: (name: string) => void;
 };
@@ -17,57 +16,63 @@ const DownloadCard: React.FC<Props> = ({
   setSignedFilename,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-const handleDownload = async () => {
-  setLoading(true);
-  setError('');
-  setSuccess('');
+  const handleDownload = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
-  try {
-    // if the filename starts with 'signed-', remove it for the download
-    const filename = signedFilename.startsWith('signed-')
-      ? signedFilename.replace('signed-', '')
-      : signedFilename;
+    try {
+      // if the filename starts with 'signed-', remove it for the download
+      const filename = signedFilename.startsWith("signed-")
+        ? signedFilename.replace("signed-", "")
+        : signedFilename;
 
-    const response = await fetch(`http://172.20.10.2:8000/download/${encodeURIComponent(filename)}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch the file.');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/download/${encodeURIComponent(
+          filename
+        )}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch the file.");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = signedFilename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      setSuccess("Download Complete!");
+    } catch {
+      setError("Download failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = signedFilename;
-    a.click();
-    window.URL.revokeObjectURL(url);
-
-    setSuccess('Download Complete!');
-  } catch {
-    setError('Download failed. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-  const handleReset = () => {
-    setCurrentStep('upload');
-    setUploadedFile(null);
-    setSignedFilename('');
-    setError('');
-    setSuccess('');
   };
-
-
+  const handleReset = () => {
+    setCurrentStep("upload");
+    setUploadedFile(null);
+    setSignedFilename("");
+    setError("");
+    setSuccess("");
+  };
 
   return (
     <div className="max-w-md mx-auto mt-[5rem] bg-white border border-gray-200 rounded-lg shadow-sm p-6">
       <div className="text-center mb-6">
         <Download className="h-8 w-8 text-black mx-auto mb-3" />
-        <h2 className="text-2xl font-semibold text-black mb-2">Download Signed PDF</h2>
-        <p className="text-gray-600">Your document has been signed successfully</p>
+        <h2 className="text-2xl font-semibold text-black mb-2">
+          Download Signed PDF
+        </h2>
+        <p className="text-gray-600">
+          Your document has been signed successfully
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -76,8 +81,6 @@ const handleDownload = async () => {
           <h3 className="font-medium text-black mb-1">Document Signed!</h3>
           <p className="text-sm text-gray-600">{signedFilename}</p>
         </div>
-
-       
 
         {error && (
           <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-md">
@@ -125,5 +128,3 @@ const handleDownload = async () => {
 };
 
 export default DownloadCard;
-
-

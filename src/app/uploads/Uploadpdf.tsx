@@ -34,7 +34,7 @@ const UploadPdf: React.FC<UploadPdfProps> = ({ setCurrentStep, setUploadedFile }
       formData.append('file', file);
 
       // API call to upload PDF
-      const response = await fetch('http://172.20.10.2:8000/upload', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
         method: 'POST',
         body: formData,
       });

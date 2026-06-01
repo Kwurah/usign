@@ -34,13 +34,16 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
   const [sigPad, setSigPad] = useState<SignatureCanvas | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [typedSignature, setTypedSignature] = useState("");
-  const [signatureMethod, setSignatureMethod] = useState<"draw" | "upload" | "type">("draw");
+  const [signatureMethod, setSignatureMethod] = useState<
+    "draw" | "upload" | "type"
+  >("draw");
   const [uploadedSignature, setUploadedSignature] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // New state for managing saved signatures
   const [tempTypedSignature, setTempTypedSignature] = useState("");
-  const [tempUploadedSignature, setTempUploadedSignature] = useState<string>("");
+  const [tempUploadedSignature, setTempUploadedSignature] =
+    useState<string>("");
   const [savedSignatures, setSavedSignatures] = useState({
     draw: false,
     upload: false,
@@ -48,7 +51,10 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
   });
 
   // Store actual PDF dimensions for proper scaling
-  const [pdfDimensions, setPdfDimensions] = useState({ width: 595, height: 842 }); // Default A4 dimensions
+  const [pdfDimensions, setPdfDimensions] = useState({
+    width: 595,
+    height: 842,
+  }); // Default A4 dimensions
 
   // Convert PDF to images using backend
   useEffect(() => {
@@ -58,12 +64,15 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
       setLoadingPdf(true);
       try {
         const formData = new FormData();
-        formData.append('file', uploadedFile);
+        formData.append("file", uploadedFile);
 
-        const response = await fetch("http://172.20.10.2:8000/convert-pdf-to-images", {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/convert-pdf-to-images`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!response.ok) throw new Error("Failed to convert PDF");
 
@@ -86,12 +95,12 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!previewRef.current) return;
 
-    const img = previewRef.current.querySelector('img');
+    const img = previewRef.current.querySelector("img");
     if (!img) return;
 
     // Get the image's bounding rectangle
     const imgRect = img.getBoundingClientRect();
-    
+
     // Calculate click position relative to the image
     const x = e.clientX - imgRect.left;
     const y = e.clientY - imgRect.top;
@@ -114,8 +123,14 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
     const centeredY = Math.max(0, pdfY - signatureData.height / 2);
 
     // Ensure signature doesn't go beyond page boundaries
-    const finalX = Math.min(centeredX, pdfDimensions.width - signatureData.width);
-    const finalY = Math.min(centeredY, pdfDimensions.height - signatureData.height);
+    const finalX = Math.min(
+      centeredX,
+      pdfDimensions.width - signatureData.width
+    );
+    const finalY = Math.min(
+      centeredY,
+      pdfDimensions.height - signatureData.height
+    );
 
     setSignatureData({
       ...signatureData,
@@ -125,11 +140,13 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
     });
   };
 
-  const handleSignatureFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSignatureFileUpload = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       setError("Please upload an image file (PNG, JPG, etc.)");
       return;
     }
@@ -157,19 +174,19 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
   const saveTypedSignature = () => {
     setTypedSignature(tempTypedSignature);
-    
+
     // Create a canvas with the typed signature
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = 400;
     canvas.height = 100;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'black';
-      ctx.font = '32px cursive';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.fillStyle = "black";
+      ctx.font = "32px cursive";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.fillText(tempTypedSignature, canvas.width / 2, canvas.height / 2);
       const base64 = canvas.toDataURL().split(",")[1];
       setSignatureData({ ...signatureData, signature: base64 });
@@ -183,7 +200,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
   const handleSignatureSubmit = async () => {
     let signatureToSubmit = "";
-    
+
     // Get signature based on method
     switch (signatureMethod) {
       case "draw":
@@ -213,7 +230,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
       setError("Please create and save your signature first");
       return;
     }
-    
+
     if (!uploadedFile) {
       setError("No file uploaded");
       return;
@@ -230,9 +247,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
         filename: uploadedFile.name,
       };
 
-      console.log("Sending payload:", payload);
-
-      const response = await fetch("http://172.20.10.2:8000/sign", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -244,7 +259,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
       }
 
       const data = await response.json();
-      
+
       setSignedFilename(data?.signedFilename || `signed-${uploadedFile.name}`);
       setSuccess("Document signed successfully!");
       setTimeout(() => {
@@ -260,7 +275,6 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
     } finally {
       setLoading(false);
     }
-    console.log('Submitting signature on page:', signatureData.page, 'Total pages:', pdfPages.length);
   };
 
   const saveDrawnSignature = () => {
@@ -282,27 +296,33 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
   const hasSignature = () => {
     switch (signatureMethod) {
-      case "draw": return savedSignatures.draw;
-      case "upload": return savedSignatures.upload;
-      case "type": return savedSignatures.type;
-      default: return false;
+      case "draw":
+        return savedSignatures.draw;
+      case "upload":
+        return savedSignatures.upload;
+      case "type":
+        return savedSignatures.type;
+      default:
+        return false;
     }
   };
 
   // Function to calculate signature position for display
   const getSignatureDisplayStyle = () => {
     if (!previewRef.current) return {};
-    
-    const img = previewRef.current.querySelector('img');
+
+    const img = previewRef.current.querySelector("img");
     if (!img) return {};
 
     const imgRect = img.getBoundingClientRect();
-    
+
     // Convert PDF coordinates back to display coordinates
     const displayX = (signatureData.x / pdfDimensions.width) * imgRect.width;
     const displayY = (signatureData.y / pdfDimensions.height) * imgRect.height;
-    const displayWidth = (signatureData.width / pdfDimensions.width) * imgRect.width;
-    const displayHeight = (signatureData.height / pdfDimensions.height) * imgRect.height;
+    const displayWidth =
+      (signatureData.width / pdfDimensions.width) * imgRect.width;
+    const displayHeight =
+      (signatureData.height / pdfDimensions.height) * imgRect.height;
 
     return {
       left: `${displayX}px`,
@@ -348,7 +368,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                   alt={`Page ${currentPage}`}
                   className="w-full h-auto block"
                 />
-                
+
                 {/* Signature placeholder - show only if signature is saved */}
                 {signatureData.page === currentPage && hasSignature() && (
                   <div
@@ -371,7 +391,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
             <div className="mt-4 flex justify-between items-center">
               <button
                 disabled={currentPage <= 1}
-                onClick={() => setCurrentPage(prev => prev - 1)}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
                 className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
@@ -381,7 +401,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
               </span>
               <button
                 disabled={currentPage >= pdfPages.length}
-                onClick={() => setCurrentPage(prev => prev + 1)}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
                 className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
@@ -395,7 +415,9 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
           <div className="space-y-6">
             {/* Signature Method Selection */}
             <div>
-              <h3 className="text-lg font-medium mb-4">Choose Signature Method</h3>
+              <h3 className="text-lg font-medium mb-4">
+                Choose Signature Method
+              </h3>
 
               <div className="grid grid-cols-3 gap-3">
                 {/* Draw */}
@@ -414,7 +436,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                     <div className="text-xs text-green-600 mt-1">✓ Saved</div>
                   )}
                 </button>
-                
+
                 <button
                   onClick={() => setSignatureMethod("upload")}
                   className={`p-4 rounded-lg border-2 transition-all ${
@@ -430,7 +452,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                     <div className="text-xs text-green-600 mt-1">✓ Saved</div>
                   )}
                 </button>
-                
+
                 <button
                   onClick={() => setSignatureMethod("type")}
                   className={`p-4 rounded-lg border-2 transition-all ${
@@ -453,7 +475,9 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
             <div className="bg-gray-50 p-6 rounded-lg">
               {signatureMethod === "draw" && (
                 <div className="space-y-4">
-                  <h4 className="font-medium text-gray-800">Draw Your Signature</h4>
+                  <h4 className="font-medium text-gray-800">
+                    Draw Your Signature
+                  </h4>
                   <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-4">
                     <SignatureCanvas
                       penColor="black"
@@ -489,7 +513,9 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
               {signatureMethod === "upload" && (
                 <div className="space-y-4">
-                  <h4 className="font-medium text-gray-800">Upload Signature Image</h4>
+                  <h4 className="font-medium text-gray-800">
+                    Upload Signature Image
+                  </h4>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                     {tempUploadedSignature ? (
                       <div className="space-y-3">
@@ -533,8 +559,12 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                         className="cursor-pointer"
                       >
                         <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-600">Click to upload signature image</p>
-                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                        <p className="text-sm text-gray-600">
+                          Click to upload signature image
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
                       </div>
                     )}
                     <input
@@ -556,7 +586,9 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
               {/* typed signature */}
               {signatureMethod === "type" && (
                 <div className="space-y-4">
-                  <h4 className="font-medium text-gray-800">Type Your Signature</h4>
+                  <h4 className="font-medium text-gray-800">
+                    Type Your Signature
+                  </h4>
                   <input
                     type="text"
                     placeholder="Enter your full name"
@@ -564,7 +596,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                     onChange={(e) => setTempTypedSignature(e.target.value)}
                     className="w-full px-4 py-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
                   />
-                  
+
                   {tempTypedSignature && (
                     <div className="flex justify-between gap-3 ">
                       <button
@@ -584,15 +616,17 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
 
                   {savedSignatures.type && (
                     <div className="space-y-3">
-                      {/* <div className="bg-white border rounded-lg p-4"> */}
-                        {/* <p className="text-sm text-gray-600 mb-2">Saved signature:</p> */}
-                        {/* <div
+                      <div className="bg-white border rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-2">
+                          Saved signature:
+                        </p>
+                        <div
                           className="text-2xl text-center py-2"
-                          style={{ fontFamily: 'cursive' }}
-                        > */}
+                          style={{ fontFamily: "cursive" }}
+                        >
                           {typedSignature}
-                        {/* </div> */}
-                      {/* </div> */}
+                        </div>
+                      </div>
                       <div className="text-center text-sm text-green-600 font-medium">
                         ✓ Signature saved! Click on the document to position it.
                       </div>
@@ -608,7 +642,9 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                 <h4 className="font-medium text-gray-800">Signature Size</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-2">Width</label>
+                    <label className="block text-sm text-gray-600 mb-2">
+                      Width
+                    </label>
                     <input
                       type="range"
                       min="100"
@@ -620,15 +656,22 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                           ...signatureData,
                           width: newWidth,
                           // Adjust position if signature would go beyond page boundaries
-                          x: Math.min(signatureData.x, pdfDimensions.width - newWidth)
+                          x: Math.min(
+                            signatureData.x,
+                            pdfDimensions.width - newWidth
+                          ),
                         });
                       }}
                       className="w-full accent-blue-500"
                     />
-                    <div className="text-center text-sm text-gray-500 mt-1">{signatureData.width}px</div>
+                    <div className="text-center text-sm text-gray-500 mt-1">
+                      {signatureData.width}px
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 mb-2">Height</label>
+                    <label className="block text-sm text-gray-600 mb-2">
+                      Height
+                    </label>
                     <input
                       type="range"
                       min="30"
@@ -640,12 +683,17 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                           ...signatureData,
                           height: newHeight,
                           // Adjust position if signature would go beyond page boundaries
-                          y: Math.min(signatureData.y, pdfDimensions.height - newHeight)
+                          y: Math.min(
+                            signatureData.y,
+                            pdfDimensions.height - newHeight
+                          ),
                         });
                       }}
                       className="w-full accent-blue-500"
                     />
-                    <div className="text-center text-sm text-gray-500 mt-1">{signatureData.height}px</div>
+                    <div className="text-center text-sm text-gray-500 mt-1">
+                      {signatureData.height}px
+                    </div>
                   </div>
                 </div>
               </div>
@@ -670,9 +718,7 @@ const UploadSignatureWithPreview: React.FC<SignatureProps> = ({
                     Signing Document...
                   </>
                 ) : (
-                  <>
-                    ✍️ Sign Document
-                  </>
+                  <>✍️ Sign Document</>
                 )}
               </button>
             </div>
